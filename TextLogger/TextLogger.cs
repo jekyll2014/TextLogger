@@ -48,7 +48,7 @@ namespace TextLogger
 
         public TimeFormat DefaultTimeFormat = TimeFormat.LongTime;
         public DateFormat DefaultDateFormat = DateFormat.ShortDate;
-        public Dictionary<byte, string> Channels = new Dictionary<byte, string>();
+        public Dictionary<int, string> Channels = new Dictionary<int, string>();
 
         public delegate void TextChangedEventHandler(object sender, TextLoggerEventArgs e);
         public event TextChangedEventHandler? TextChangedEvent;
@@ -64,7 +64,7 @@ namespace TextLogger
         }
 
         private readonly ConcurrentQueue<string> _messageQueue = new ConcurrentQueue<string>();
-        private byte _prevChannel;
+        private int _prevChannel;
         private DateTime _lastEvent = DateTime.Now;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private string _text = string.Empty;
@@ -88,75 +88,75 @@ namespace TextLogger
             }, _cts.Token);
         }
 
-        public void AddText(string text, byte channel)
+        public void AddText(string text, int channel = -1)
         {
             AddText(text, channel, DateTime.MinValue, TextFormat.Default, TimeFormat.Default,
                DateFormat.Default);
         }
 
-        public void AddText(string text, byte channel, DateTime eventTime)
+        public void AddText(string text, int channel, DateTime eventTime)
         {
             AddText(text, channel, eventTime, TextFormat.Default, TimeFormat.Default, DateFormat.Default);
         }
 
-        public void AddText(string text, byte channel, DateTime eventTime, TimeFormat timeFormat)
+        public void AddText(string text, int channel, DateTime eventTime, TimeFormat timeFormat)
         {
             AddText(text, channel, eventTime, TextFormat.Default, timeFormat, DateFormat.Default);
         }
 
-        public void AddText(string text, byte channel, DateTime eventTime, DateFormat dateFormat)
+        public void AddText(string text, int channel, DateTime eventTime, DateFormat dateFormat)
         {
             AddText(text, channel, eventTime, TextFormat.Default, TimeFormat.Default, dateFormat);
         }
 
-        public void AddText(string text, byte channel, DateTime eventTime, TextFormat textTextFormat,
+        public void AddText(string text, int channel, DateTime eventTime, TextFormat textTextFormat,
             TimeFormat timeFormat)
         {
             AddText(text, channel, eventTime, textTextFormat, timeFormat, DateFormat.Default);
         }
 
-        public void AddText(string text, byte channel, DateTime eventTime, TextFormat textTextFormat,
+        public void AddText(string text, int channel, DateTime eventTime, TextFormat textTextFormat,
             DateFormat dateFormat)
         {
             AddText(text, channel, eventTime, textTextFormat, TimeFormat.Default, dateFormat);
         }
 
-        public void AddText(string text, byte channel, DateTime eventTime, TimeFormat timeFormat, DateFormat dateFormat)
+        public void AddText(string text, int channel, DateTime eventTime, TimeFormat timeFormat, DateFormat dateFormat)
         {
             AddText(text, channel, eventTime, TextFormat.Default, timeFormat, dateFormat);
         }
 
-        public void AddText(string text, byte channel, TextFormat textTextFormat)
+        public void AddText(string text, int channel, TextFormat textTextFormat)
         {
             AddText(text, channel, DateTime.MinValue, textTextFormat, TimeFormat.Default, DateFormat.Default);
         }
 
-        public void AddText(string text, byte channel, TimeFormat timeFormat)
+        public void AddText(string text, int channel, TimeFormat timeFormat)
         {
             AddText(text, channel, DateTime.MinValue, TextFormat.Default, timeFormat, DateFormat.Default);
         }
 
-        public void AddText(string text, byte channel, DateFormat dateFormat)
+        public void AddText(string text, int channel, DateFormat dateFormat)
         {
             AddText(text, channel, DateTime.MinValue, TextFormat.Default, TimeFormat.Default, dateFormat);
         }
 
-        public void AddText(string text, byte channel, TextFormat textTextFormat, TimeFormat timeFormat)
+        public void AddText(string text, int channel, TextFormat textTextFormat, TimeFormat timeFormat)
         {
             AddText(text, channel, DateTime.MinValue, textTextFormat, timeFormat, DateFormat.Default);
         }
 
-        public void AddText(string text, byte channel, TextFormat textTextFormat, DateFormat dateFormat)
+        public void AddText(string text, int channel, TextFormat textTextFormat, DateFormat dateFormat)
         {
             AddText(text, channel, DateTime.MinValue, textTextFormat, TimeFormat.Default, dateFormat);
         }
 
-        public void AddText(string text, byte channel, TimeFormat timeFormat, DateFormat dateFormat)
+        public void AddText(string text, int channel, TimeFormat timeFormat, DateFormat dateFormat)
         {
             AddText(text, channel, DateTime.MinValue, TextFormat.Default, timeFormat, dateFormat);
         }
 
-        private void AddText(string text, byte channel, DateTime logTime, TextFormat textFormat,
+        private void AddText(string text, int channel, DateTime logTime, TextFormat textFormat,
             TimeFormat timeFormat = TimeFormat.Default, DateFormat dateFormat = DateFormat.Default)
         {
             if (text.Length <= 0)
@@ -199,7 +199,7 @@ namespace TextLogger
                         tmpStr.Append(logTime.ToShortTimeString() + " ");
                 }
 
-                if (Channels.ContainsKey(channel) && !string.IsNullOrEmpty(Channels[channel]))
+                if (channel >= 0 && Channels.ContainsKey(channel) && !string.IsNullOrEmpty(Channels[channel]))
                     tmpStr.Append(Channels[channel] + " ");
             }
 
