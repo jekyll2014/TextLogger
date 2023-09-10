@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +10,7 @@ using System.Threading.Tasks;
 namespace TextLogger
 {
     // string length limit
-    public class TextLogger : IDisposable, INotifyPropertyChanged
+    public sealed class TextLogger : IDisposable
     {
         public enum TextFormat
         {
@@ -51,13 +49,25 @@ namespace TextLogger
         public TimeFormat DefaultTimeFormat = TimeFormat.LongTime;
         public DateFormat DefaultDateFormat = DateFormat.ShortDate;
         public Dictionary<byte, string> Channels = new Dictionary<byte, string>();
-        public event PropertyChangedEventHandler? PropertyChanged;
-        public string Text { get; private set; } = string.Empty;
+
+        public delegate void TextChangedEventHandler(object sender, TextLoggerEventArgs e);
+        public event TextChangedEventHandler? TextChangedEvent;
+
+        public string Text
+        {
+            get => _text;
+            private set
+            {
+                _text = value;
+                TextChangedEvent?.Invoke(this, new TextLoggerEventArgs(_text));
+            }
+        }
 
         private readonly ConcurrentQueue<string> _messageQueue = new ConcurrentQueue<string>();
         private byte _prevChannel;
         private DateTime _lastEvent = DateTime.Now;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private string _text = string.Empty;
         private bool _disposed = false;
 
         public TextLogger()
@@ -77,78 +87,80 @@ namespace TextLogger
                 }
             }, _cts.Token);
         }
-        public bool AddText(string text, byte channel)
+
+        public void AddText(string text, byte channel)
         {
-            return AddText(text, channel, DateTime.MinValue, TextFormat.Default, TimeFormat.Default,
-                DateFormat.Default);
+            AddText(text, channel, DateTime.MinValue, TextFormat.Default, TimeFormat.Default,
+               DateFormat.Default);
         }
 
-        public bool AddText(string text, byte channel, DateTime eventTime)
+        public void AddText(string text, byte channel, DateTime eventTime)
         {
-            return AddText(text, channel, eventTime, TextFormat.Default, TimeFormat.Default, DateFormat.Default);
+            AddText(text, channel, eventTime, TextFormat.Default, TimeFormat.Default, DateFormat.Default);
         }
 
-        public bool AddText(string text, byte channel, DateTime eventTime, TimeFormat timeFormat)
+        public void AddText(string text, byte channel, DateTime eventTime, TimeFormat timeFormat)
         {
-            return AddText(text, channel, eventTime, TextFormat.Default, timeFormat, DateFormat.Default);
+            AddText(text, channel, eventTime, TextFormat.Default, timeFormat, DateFormat.Default);
         }
 
-        public bool AddText(string text, byte channel, DateTime eventTime, DateFormat dateFormat)
+        public void AddText(string text, byte channel, DateTime eventTime, DateFormat dateFormat)
         {
-            return AddText(text, channel, eventTime, TextFormat.Default, TimeFormat.Default, dateFormat);
+            AddText(text, channel, eventTime, TextFormat.Default, TimeFormat.Default, dateFormat);
         }
 
-        public bool AddText(string text, byte channel, DateTime eventTime, TextFormat textTextFormat,
+        public void AddText(string text, byte channel, DateTime eventTime, TextFormat textTextFormat,
             TimeFormat timeFormat)
         {
-            return AddText(text, channel, eventTime, textTextFormat, timeFormat, DateFormat.Default);
+            AddText(text, channel, eventTime, textTextFormat, timeFormat, DateFormat.Default);
         }
 
-        public bool AddText(string text, byte channel, DateTime eventTime, TextFormat textTextFormat,
+        public void AddText(string text, byte channel, DateTime eventTime, TextFormat textTextFormat,
             DateFormat dateFormat)
         {
-            return AddText(text, channel, eventTime, textTextFormat, TimeFormat.Default, dateFormat);
+            AddText(text, channel, eventTime, textTextFormat, TimeFormat.Default, dateFormat);
         }
 
-        public bool AddText(string text, byte channel, DateTime eventTime, TimeFormat timeFormat, DateFormat dateFormat)
+        public void AddText(string text, byte channel, DateTime eventTime, TimeFormat timeFormat, DateFormat dateFormat)
         {
-            return AddText(text, channel, eventTime, TextFormat.Default, timeFormat, dateFormat);
+            AddText(text, channel, eventTime, TextFormat.Default, timeFormat, dateFormat);
         }
 
-        public bool AddText(string text, byte channel, TextFormat textTextFormat)
+        public void AddText(string text, byte channel, TextFormat textTextFormat)
         {
-            return AddText(text, channel, DateTime.MinValue, textTextFormat, TimeFormat.Default, DateFormat.Default);
+            AddText(text, channel, DateTime.MinValue, textTextFormat, TimeFormat.Default, DateFormat.Default);
         }
 
-        public bool AddText(string text, byte channel, TimeFormat timeFormat)
+        public void AddText(string text, byte channel, TimeFormat timeFormat)
         {
-            return AddText(text, channel, DateTime.MinValue, TextFormat.Default, timeFormat, DateFormat.Default);
+            AddText(text, channel, DateTime.MinValue, TextFormat.Default, timeFormat, DateFormat.Default);
         }
 
-        public bool AddText(string text, byte channel, DateFormat dateFormat)
+        public void AddText(string text, byte channel, DateFormat dateFormat)
         {
-            return AddText(text, channel, DateTime.MinValue, TextFormat.Default, TimeFormat.Default, dateFormat);
+            AddText(text, channel, DateTime.MinValue, TextFormat.Default, TimeFormat.Default, dateFormat);
         }
 
-        public bool AddText(string text, byte channel, TextFormat textTextFormat, TimeFormat timeFormat)
+        public void AddText(string text, byte channel, TextFormat textTextFormat, TimeFormat timeFormat)
         {
-            return AddText(text, channel, DateTime.MinValue, textTextFormat, timeFormat, DateFormat.Default);
+            AddText(text, channel, DateTime.MinValue, textTextFormat, timeFormat, DateFormat.Default);
         }
 
-        public bool AddText(string text, byte channel, TextFormat textTextFormat, DateFormat dateFormat)
+        public void AddText(string text, byte channel, TextFormat textTextFormat, DateFormat dateFormat)
         {
-            return AddText(text, channel, DateTime.MinValue, textTextFormat, TimeFormat.Default, dateFormat);
+            AddText(text, channel, DateTime.MinValue, textTextFormat, TimeFormat.Default, dateFormat);
         }
 
-        public bool AddText(string text, byte channel, TimeFormat timeFormat, DateFormat dateFormat)
+        public void AddText(string text, byte channel, TimeFormat timeFormat, DateFormat dateFormat)
         {
-            return AddText(text, channel, DateTime.MinValue, TextFormat.Default, timeFormat, dateFormat);
+            AddText(text, channel, DateTime.MinValue, TextFormat.Default, timeFormat, dateFormat);
         }
 
-        private bool AddText(string text, byte channel, DateTime logTime, TextFormat textFormat,
+        private void AddText(string text, byte channel, DateTime logTime, TextFormat textFormat,
             TimeFormat timeFormat = TimeFormat.Default, DateFormat dateFormat = DateFormat.Default)
         {
-            if (text.Length <= 0) return true;
+            if (text.Length <= 0)
+                return;
 
             var continueString = false;
             if (channel != _prevChannel)
@@ -205,8 +217,6 @@ namespace TextLogger
 
             if (tmpStr.Length > 0)
                 _messageQueue.Enqueue(tmpStr.ToString());
-
-            return true;
         }
 
         public override string ToString()
@@ -217,7 +227,6 @@ namespace TextLogger
         public void Clear()
         {
             Text = string.Empty;
-            OnPropertyChanged();
         }
 
         public void Dispose()
@@ -232,14 +241,10 @@ namespace TextLogger
             Dispose(false);
         }
 
-        private void OnPropertyChanged([CallerMemberName] string? name = null)
+        private void Dispose(bool disposing)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed) return;
+            if (_disposed)
+                return;
 
             if (disposing) ;
 
@@ -249,17 +254,17 @@ namespace TextLogger
 
         private void AddTextToBuffer(string text)
         {
-            Text += text;
+            _text += text;
             var textSizeReduced = 0;
-            if (CharLimit > 0 && Text.Length > CharLimit) textSizeReduced = Text.Length - CharLimit;
+            if (CharLimit > 0 && _text.Length > CharLimit) textSizeReduced = _text.Length - CharLimit;
 
-            if (LineLimit > 0 && GetLinesCount(Text, LineLimit, out var pos) && pos > textSizeReduced)
+            if (LineLimit > 0 && GetLinesCount(_text, LineLimit, out var pos) && pos > textSizeReduced)
                 textSizeReduced = pos;
 
             if (textSizeReduced > 0)
-                Text = Text[textSizeReduced..];
-
-            OnPropertyChanged();
+                Text = _text[textSizeReduced..];
+            else
+                Text = _text;
         }
 
         private static void SaveTextToFile(string text, string fileName)
@@ -273,6 +278,7 @@ namespace TextLogger
                 Debug.Print(e.Message);
             }
         }
+
         private static bool GetLinesCount(string data, int lineLimit, out int pos)
         {
             var divider = new HashSet<char>
@@ -320,7 +326,8 @@ namespace TextLogger
 
         private static string FilterZeroChar(string m, bool replaceWithSpace = true)
         {
-            if (string.IsNullOrEmpty(m)) return string.Empty;
+            if (string.IsNullOrEmpty(m))
+                return string.Empty;
 
             var n = new StringBuilder();
             foreach (var t in m)
@@ -332,7 +339,8 @@ namespace TextLogger
 
         private static string ConvertStringToHex(string utfString)
         {
-            if (string.IsNullOrEmpty(utfString)) return string.Empty;
+            if (string.IsNullOrEmpty(utfString))
+                return string.Empty;
 
             var encodedBytes = Encoding.ASCII.GetBytes(utfString);
             var hexStr = new StringBuilder();
