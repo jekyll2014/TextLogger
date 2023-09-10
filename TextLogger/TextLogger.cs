@@ -347,8 +347,8 @@ namespace TextLogger
             foreach (var b in encodedBytes)
             {
                 var c = (char)b;
-                hexStr.Append(((int)c).ToString("X2 "));
-                //hexStr.Append(' ');
+                hexStr.Append(((int)c).ToString("X2"));
+                hexStr.Append(' ');
             }
 
             return hexStr.ToString();
