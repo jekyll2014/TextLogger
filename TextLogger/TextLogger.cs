@@ -246,7 +246,10 @@ namespace TextLogger
             if (_disposed)
                 return;
 
-            if (disposing) ;
+            if (disposing)
+            {
+
+            }
 
             Text = string.Empty;
             _disposed = true;
