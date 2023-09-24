@@ -51,6 +51,7 @@ namespace TextLogger
         public Dictionary<int, string> Channels = new Dictionary<int, string>();
 
         public delegate void TextChangedEventHandler(object sender, TextLoggerEventArgs e);
+
         public event TextChangedEventHandler? TextChangedEvent;
 
         public string Text
@@ -91,7 +92,7 @@ namespace TextLogger
         public void AddText(string text, int channel = -1)
         {
             AddText(text, channel, DateTime.MinValue, TextFormat.Default, TimeFormat.Default,
-               DateFormat.Default);
+                DateFormat.Default);
         }
 
         public void AddText(string text, int channel, DateTime eventTime)
@@ -248,7 +249,6 @@ namespace TextLogger
 
             if (disposing)
             {
-
             }
 
             Text = string.Empty;
