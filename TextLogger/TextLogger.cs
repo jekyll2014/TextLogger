@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,16 +76,30 @@ namespace TextLogger
         {
             Task.Run(() =>
             {
+                var tasks = new List<Task>();
+
                 while (!_cts.IsCancellationRequested)
                 {
                     if (!_messageQueue.TryDequeue(out var message))
                         continue;
 
                     if (LogToScreen)
-                        AddTextToBuffer(message);
+                    {
+                        var t = Task.Run(() => AddTextToBuffer(message), _cts.Token);
+                        tasks.Add(t);
+                    }
 
                     if (!string.IsNullOrEmpty(LogFileName))
-                        SaveTextToFile(message, LogFileName);
+                    {
+                        var t = Task.Run(() => SaveTextToFile(message, LogFileName), _cts.Token);
+                        tasks.Add(t);
+                    }
+
+                    if (tasks.Any())
+                    {
+                        Task.WaitAll(tasks.ToArray());
+                        tasks.Clear();
+                    }
                 }
             }, _cts.Token);
         }
