@@ -215,7 +215,8 @@ namespace TextLogger
                         tmpStr.Append(logTime.ToShortTimeString() + " ");
                 }
 
-                if (channel >= 0 && Channels.ContainsKey(channel) && !string.IsNullOrEmpty(Channels[channel]))
+                if (channel >= 0 && Channels.ContainsKey(channel)
+                    && !string.IsNullOrEmpty(Channels[channel]))
                     tmpStr.Append(Channels[channel] + " ");
             }
 
@@ -229,7 +230,8 @@ namespace TextLogger
                 tmpStr.Append(text);
             else if (textFormat == TextFormat.Hex)
                 tmpStr.Append(ConvertStringToHex(text));
-            else if (textFormat == TextFormat.AutoReplaceHex) tmpStr.Append(ReplaceUnprintable(text));
+            else if (textFormat == TextFormat.AutoReplaceHex)
+                tmpStr.Append(ReplaceUnprintable(text));
 
             if (tmpStr.Length > 0)
                 _messageQueue.Enqueue(tmpStr.ToString());
