@@ -74,7 +74,7 @@ namespace TextLogger
 
         public TextLogger()
         {
-            Task.Run(() =>
+            Task.Factory.StartNew(async () =>
             {
                 var tasks = new List<Task>();
 
@@ -97,11 +97,13 @@ namespace TextLogger
 
                     if (tasks.Any())
                     {
-                        Task.WaitAll(tasks.ToArray());
+                        await Task.WhenAll(tasks.ToArray());
                         tasks.Clear();
                     }
+
+                    await Task.Yield();
                 }
-            }, _cts.Token);
+            }, _cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         public void AddText(string text, int channel = -1)
