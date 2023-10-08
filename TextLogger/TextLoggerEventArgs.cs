@@ -6,7 +6,7 @@
 
         public TextLoggerEventArgs(string text)
         {
-            this.Text = text;
+            Text = text;
         }
     }
 }

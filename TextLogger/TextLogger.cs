@@ -218,7 +218,7 @@ namespace TextLogger
                 }
 
                 if (channel >= 0 && Channels.ContainsKey(channel)
-                    && !string.IsNullOrEmpty(Channels[channel]))
+                                 && !string.IsNullOrEmpty(Channels[channel]))
                     tmpStr.Append(Channels[channel] + " ");
             }
 
