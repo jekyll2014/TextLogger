@@ -80,28 +80,29 @@ namespace TextLogger
 
                 while (!_cts.IsCancellationRequested)
                 {
-                    if (!_messageQueue.TryDequeue(out var message))
-                        continue;
-
-                    if (LogToScreen)
+                    if (_messageQueue.TryDequeue(out var message))
                     {
-                        var t = Task.Run(() => AddTextToBuffer(message), _cts.Token);
-                        tasks.Add(t);
+
+                        if (LogToScreen)
+                        {
+                            var t = Task.Run(() => AddTextToBuffer(message), _cts.Token);
+                            tasks.Add(t);
+                        }
+
+                        if (!string.IsNullOrEmpty(LogFileName))
+                        {
+                            var t = Task.Run(() => SaveTextToFile(message, LogFileName), _cts.Token);
+                            tasks.Add(t);
+                        }
+
+                        if (tasks.Any())
+                        {
+                            await Task.WhenAll(tasks.ToArray());
+                            tasks.Clear();
+                        }
                     }
 
-                    if (!string.IsNullOrEmpty(LogFileName))
-                    {
-                        var t = Task.Run(() => SaveTextToFile(message, LogFileName), _cts.Token);
-                        tasks.Add(t);
-                    }
-
-                    if (tasks.Any())
-                    {
-                        await Task.WhenAll(tasks.ToArray());
-                        tasks.Clear();
-                    }
-
-                    await Task.Yield();
+                    await Task.Delay(1);
                 }
             }, _cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
