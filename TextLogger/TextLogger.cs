@@ -43,6 +43,7 @@ namespace TextLogger
         public int LineTimeLimit = 100;
         public string LogFileName = string.Empty;
         public bool FilterZeroChars = true;
+        public bool AutoLogTime = true;
 
         //Text, HEX, Auto (change non-readable to <HEX>)
         public TextFormat DefaultTextFormat = TextFormat.AutoReplaceHex;
@@ -180,6 +181,9 @@ namespace TextLogger
         {
             if (text.Length <= 0)
                 return;
+
+            if (AutoLogTime && logTime == DateTime.MinValue)
+                logTime = DateTime.Now;
 
             var continueString = false;
             if (channel != _prevChannel)
