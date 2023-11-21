@@ -103,7 +103,7 @@ namespace TextLogger
                         }
                     }
 
-                    await Task.Delay(1);
+                    await Task.Delay(100);
                 }
             }, _cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
