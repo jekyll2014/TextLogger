@@ -98,12 +98,12 @@ namespace TextLogger
 
                         if (tasks.Any())
                         {
-                            await Task.WhenAll(tasks.ToArray());
+                            await Task.WhenAll(tasks.ToArray()).ConfigureAwait(false);
                             tasks.Clear();
                         }
                     }
 
-                    await Task.Delay(100);
+                    await Task.Delay(100).ConfigureAwait(false);
                 }
             }, _cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
