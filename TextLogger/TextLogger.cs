@@ -83,7 +83,6 @@ namespace TextLogger
                 {
                     if (_messageQueue.TryDequeue(out var message))
                     {
-
                         if (LogToScreen)
                         {
                             var t = Task.Run(() => AddTextToBuffer(message), _cts.Token);
@@ -102,8 +101,8 @@ namespace TextLogger
                             tasks.Clear();
                         }
                     }
-
-                    await Task.Delay(100).ConfigureAwait(false);
+                    else
+                        await Task.Delay(100).ConfigureAwait(false);
                 }
             }, _cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
